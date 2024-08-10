@@ -5,6 +5,7 @@ const nextConfig = {
       dynamic: 30,
     },
   },
+
 };
 
 export default nextConfig;
