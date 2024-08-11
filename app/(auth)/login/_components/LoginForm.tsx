@@ -80,7 +80,7 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
-        <LoadingButton  disabled = {isPending} loading={isPending} type="submit" className="w-full">
+        <LoadingButton   disabled = {isPending} loading={isPending} type="submit" className="w-full">
           Log in
         </LoadingButton>
       </form>
