@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 
-
+html , body , :root {
+  overflow-x : hidden;
+}
 
 @layer base {
   :root {
@@ -80,7 +82,9 @@
 
 
 @layer utilities {
-  .flex-center {
+  .container {
+    @apply max-w-[90%] mx-auto overflow-x-hidden;
+  }  .flex-center {
     @apply flex justify-center items-center;
   }
 

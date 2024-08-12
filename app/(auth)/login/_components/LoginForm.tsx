@@ -36,10 +36,10 @@ const LoginForm = () => {
       setError(undefined);
       setSuccess(undefined);
       startTransition(async () => {
-        const { error  , success } = await login(values);
-        if (error) setError(error);
-        if(success) {
-          setSuccess(success)
+        const response = await login(values);
+        if (response.error) setError(response.error);
+        if(response.success) {
+          setSuccess(response.success)
           form.reset()
           router.refresh()
           router.push('/')

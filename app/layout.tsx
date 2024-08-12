@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Spotlight } from '@/components/ui/spotlight'
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { ThemeProvider } from "next-themes";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -31,11 +33,20 @@ export default async function RootLayout({
 
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
         <main>
-    
+        <Spotlight  className=' h-[50vh] md:h-screen top-10 left-0  md:left-20 md:-top-10 ' fill = "rgb(22, 163, 74,.78)"  />
+         <Spotlight  className=' h-[60vh] md:h-screen top-10 left-[20px]  md:left-30 md:-top-20 ' fill = "rgb(22, 163, 74 ,.45)"  />
+         <Spotlight  className=' h-[70vh] md:h-screen top-10 left-[30px]  md:left-40 md:-top-30 ' fill = "rgb(22, 163, 74 ,.32)"  />
 
         {children}
         </main>
+    </ThemeProvider>
       </body>
     </html>
     </SessionProvider>

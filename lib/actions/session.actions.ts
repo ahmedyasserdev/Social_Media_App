@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
 import { auth } from "@/auth";
+import { cache } from "react";
 
-
-export const currentUser = async () => {
-    const session = await auth() 
-    return session?.user
-}
+export const currentUser = cache(async () => {
+  const session = await auth();
+  return session?.user;
+});
