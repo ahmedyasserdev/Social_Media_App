@@ -1,16 +1,21 @@
+'use client'
 import UserAvatar from "@/components/shared/UserAvatar";
 import { PostData } from "@/lib/types";
 import { formatRelativeDate } from "@/lib/utils";
+import PostMoreButton from "./PostMoreButton"
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 type PostProps = {
   post: PostData;
 };
 
-const Post = ({ post }: PostProps) => {
+const Post =  ({ post }: PostProps) => {
+  const user = useCurrentUser()
   return (
     <article className="space-y-3 rounded-2xl bg-card p-5 shadow-sm">
-      <div className="flex flex-wrap gap-3 ">
+     <div className="flex-between">
+     <div className="flex flex-wrap gap-3 ">
         <Link href={`/users/${post.user.username}`}>
           <UserAvatar avatarUrl={post.user?.avatarUrl} />
         </Link>
@@ -30,6 +35,17 @@ const Post = ({ post }: PostProps) => {
         </Link>
     </div>
       </div>
+
+
+      {
+        post.user.id === user?.id && (
+          <PostMoreButton post= {post } />
+        ) 
+      }
+
+     
+
+     </div>
 
 
     <div className="whitespace-pre-line break-words ">

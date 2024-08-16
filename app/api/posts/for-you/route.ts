@@ -1,9 +1,12 @@
 import { postDataInclude } from "../../../../lib/types";
 import  prisma  from "../../../../lib/prisma";
 import { currentUser } from "@/lib/actions/session.actions";
-import { NextResponse } from "next/server";
-export async function GET() {
+import { NextRequest, NextResponse } from "next/server";
+import{PostPage} from '../../../../lib/types'
+export async function GET(req : NextRequest) {
   try {
+    const cursor = req.nextUrl.searchParams.get("cursor")  || undefined;
+    const pageSize = 10
     const user = await currentUser();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -12,8 +15,18 @@ export async function GET() {
         createdAt: "desc",
       },
       include: postDataInclude,
+      take  :pageSize + 1,
+      cursor : cursor ? { id : cursor } : undefined
     });
-    return NextResponse.json(posts);
+
+    const nextCursor = posts.length > pageSize ? posts[pageSize].id : null
+
+    const data : PostPage = {
+      posts : posts.slice(0 , pageSize)  ,
+      nextCursor
+    }
+
+    return NextResponse.json(data);
   } catch (error) {
     console.log(error);
     return Response.json({ error: "Something went wrong" }, { status: 500 });

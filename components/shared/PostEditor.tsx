@@ -9,15 +9,21 @@ import UserAvatar from "./UserAvatar"
 import { useState } from "react"
 import { Textarea } from "../ui/textarea"
 import { Button } from "../ui/button"
+import { useSubmitPostMutation } from "@/hooks/useSubmitPostMutation"
+import LoadingButton from "./LoadingButton"
 const PostEditor = () => {
     const user = useCurrentUser()
     const [text , setText] = useState("")    
+  const {mutate , isPending} = useSubmitPostMutation()
 
-
-    const onSubmit = async () => {
+    const onSubmit =  () => {
         if (!text) return
-        await createPost(text)
-        setText("")
+        mutate(text , {
+          onSuccess : () => {
+            setText("")
+          }
+        } )
+        
     }
 
   
@@ -31,7 +37,7 @@ const PostEditor = () => {
         </div>
 
     <div className="flex justify-end">
-      <Button onClick={onSubmit}   className="min-w-20" disabled = {!text.trim()} >Post</Button>
+      <LoadingButton onClick={onSubmit} loading={isPending}  className="min-w-20" disabled = {!text.trim()} >Post</LoadingButton>
     </div>
 
     </div>

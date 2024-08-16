@@ -19,6 +19,7 @@ import { logout } from "@/lib/actions/logout.actions";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type UserButtonProps = {
   className?: string;
@@ -27,8 +28,9 @@ type UserButtonProps = {
 const UserButton = ({ className }: UserButtonProps) => {
   const user = useCurrentUser();
   const { theme, setTheme } = useTheme();
-
+  const queryClient =  useQueryClient()
   const handleLogOut = () => {
+    queryClient.clear()
     logout();
   };
 
