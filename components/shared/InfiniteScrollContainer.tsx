@@ -15,7 +15,8 @@ const InfiniteScrollContainer =  ( { onBottomReached , className , children} : I
         },
     })
     return (
-    <div className = {className}>{children}
+    <div className = {className}>
+        {children}
         <div ref = {ref} />
     </div>
   )

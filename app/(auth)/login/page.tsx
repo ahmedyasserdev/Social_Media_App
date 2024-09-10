@@ -15,7 +15,7 @@ const LoginPage = () => {
 
            <div className="shadow-2xl  flex h-full max-h-[40rem] max-w-[64rem] rounded-2xl  bg-card ">
           <div className="w-full space-y-10 overflow-y-auto  p-10 md:w-1/2">
-            <TextEffect per='word' preset='blur' className='text-center h2-bold' >Login to Bugbook</TextEffect>
+            <h1  className='text-center h2-bold' >Login to Bugbook</h1>
             <div className="space-y-5">
               <LoginForm/>
                 <Link href = "/sign-up" className='block hover:underline text-center' >Don&apos;t have an account</Link>

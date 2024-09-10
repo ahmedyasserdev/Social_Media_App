@@ -1,8 +1,10 @@
-import { postDataInclude } from "../../../../lib/types";
+import { getPostDataInclude } from "../../../../lib/types";
 import  prisma  from "../../../../lib/prisma";
 import { currentUser } from "@/lib/actions/session.actions";
 import { NextRequest, NextResponse } from "next/server";
 import{PostPage} from '../../../../lib/types'
+
+
 export async function GET(req : NextRequest) {
   try {
     const cursor = req.nextUrl.searchParams.get("cursor")  || undefined;
@@ -14,7 +16,7 @@ export async function GET(req : NextRequest) {
       orderBy: {
         createdAt: "desc",
       },
-      include: postDataInclude,
+      include: getPostDataInclude(user.id as string),
       take  :pageSize + 1,
       cursor : cursor ? { id : cursor } : undefined
     });

@@ -4,7 +4,7 @@ import { currentUser } from "@/lib/actions/session.actions";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import Post from "./_components/Post";
-import { postDataInclude } from "@/lib/types";
+
 import TrendsSidebar from "@/components/shared/TrendsSidebar";
 import ForYouFeed from "./_components/ForYouFeed";
 export default  function Home() {

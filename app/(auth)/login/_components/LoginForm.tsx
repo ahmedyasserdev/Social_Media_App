@@ -1,8 +1,16 @@
 'use client'
-import FormError from "@/components/shared/FormError";
-import FormSuccess from "@/components/shared/FormSuccess";
-import LoadingButton from "@/components/shared/LoadingButton";
-import { PasswordInput } from "@/components/shared/PasswordInput";
+import { useEffect, useRef, useState, useTransition } from 'react';
+import gsap from 'gsap';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { login } from '@/lib/actions/login.actions';
+import { loginSchema, LoginValues } from '@/lib/validation';
+
+import FormError from '@/components/shared/FormError';
+import FormSuccess from '@/components/shared/FormSuccess';
+import LoadingButton from '@/components/shared/LoadingButton';
+import { PasswordInput } from '@/components/shared/PasswordInput';
 import {
   Form,
   FormControl,
@@ -10,50 +18,57 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { login } from "@/lib/actions/login.actions";
-import { loginSchema, LoginValues } from "@/lib/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useFormAnimation } from '@/hooks/useFormAnimation';
+
 const LoginForm = () => {
-  const router = useRouter()
-    const [error, setError] = useState<string>();
+  const formRef = useRef(null);
+
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Use the animation hook
+  const router = useRouter();
+  const [error, setError] = useState<string>();
   const [success, setSuccess] = useState<string>();
-    const [isPending, startTransition] = useTransition();
-  
-    const form = useForm<LoginValues>({
-      resolver: zodResolver(loginSchema),
-      defaultValues: {
-        username: "",
-        password: "",
-      },
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  });
+
+  async function onSubmit(values: LoginValues) {
+    setError(undefined);
+    setSuccess(undefined);
+    startTransition(async () => {
+      const response = await login(values);
+      if (response.error) setError(response.error);
+      if (response.success) {
+        setSuccess(response.success);
+        form.reset();
+        router.refresh();
+        router.push('/');
+      }
     });
-  
-    async function onSubmit(values: LoginValues) {
-      setError(undefined);
-      setSuccess(undefined);
-      startTransition(async () => {
-        const response = await login(values);
-        if (response.error) setError(response.error);
-        if(response.success) {
-          setSuccess(response.success)
-          form.reset()
-          router.refresh()
-          router.push('/')
-          
-        }
-     
-      });
-    }
+  }
+
+
+  useFormAnimation(formRef, inputsRef, buttonsRef);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-        {error && <FormError message = {error} /> }
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        {error && <FormError message={error} />}
         {success && <FormSuccess message={success} />}
+
+
+
+        {/* Inputs */}
         <FormField
           control={form.control}
           name="username"
@@ -61,12 +76,19 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input disabled = {isPending} placeholder="Username" {...field} />
+                <Input
+                //@ts-ignore
+                  ref={(el) => (inputsRef.current[0] = el)}
+                  disabled={isPending}
+                  placeholder="Username"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="password"
@@ -74,18 +96,37 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput disabled = {isPending} placeholder="Password" {...field} />
+                <PasswordInput
+                //@ts-ignore
+                  ref={(el) => (inputsRef.current[1] = el)}
+                  disabled={isPending}
+                  placeholder="Password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <LoadingButton   disabled = {isPending} loading={isPending} type="submit" className="w-full">
-          Log in
-        </LoadingButton>
+
+        {/* Buttons */}
+        <div>
+          <LoadingButton
+          //@ts-ignore
+            ref={(el) => (buttonsRef.current[0] = el)}
+            disabled={isPending}
+            loading={isPending}
+            type="submit"
+            className="w-full"
+          >
+            Log in
+          </LoadingButton>
+        </div>
       </form>
     </Form>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;
+
+

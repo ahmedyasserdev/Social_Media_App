@@ -14,7 +14,7 @@ const SignUpPage = () => {
         <div className="shadow-2xl  flex h-full max-h-[40rem] max-w-[64rem] rounded-2xl overflow-hidden bg-card ">
         <div className='md:w-1/2 w-full space-y-10 overflow-y-auto p-10' >
             <div className="space-y-1 text-center ">
-              <TextEffect per='word' preset='blur' className='text-center h2-bold' >Sign up to bugbook</TextEffect>
+              <h2  className='text-center h2-bold' >Sign up to bugbook</h2>
 
         <p className="text-muted-foreground">A Place where even <span className='italic' >you</span> can find a friend.</p>
 

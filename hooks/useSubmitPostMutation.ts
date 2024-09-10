@@ -46,13 +46,9 @@ export const useSubmitPostMutation = () => {
         },
       })
 
-
         toast({
           description : "Post Created!",
         })
-
-
-
 
     },
     onError(error) {

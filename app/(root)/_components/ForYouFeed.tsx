@@ -51,8 +51,8 @@ const ForYouFeed = () => {
   return (
     <InfiniteScrollContainer onBottomReached = {() =>  hasNextPage && !isFetching && fetchNextPage()}  className="space-y-5">
       {
-      posts?.map((post) => (
-            <Post  post = {post} key = {post.id} />
+      posts?.map((post ,  ) => (
+            <Post  post = {post} key = {post?.id} />
         ))
     }
 
