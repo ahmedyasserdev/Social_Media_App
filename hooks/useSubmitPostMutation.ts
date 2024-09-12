@@ -40,19 +40,19 @@ export const useSubmitPostMutation = () => {
 
 
       queryClient.invalidateQueries({
-        queryKey : queryFilter.queryKey,
+        queryKey: queryFilter.queryKey,
         predicate(query) {
           return !query.state.data
         },
-      })
+      });
 
-        toast({
-          description : "Post Created!",
-        })
+      toast({
+        description: "Post Created!",
+      })
 
     },
     onError(error) {
-      console.log('[MUTATING_SUBMITING_POST]'  , error);
+      console.log('[MUTATING_SUBMITING_POST]', error);
       toast({
         description: "Failed to create post please try again.",
         variant: "destructive",

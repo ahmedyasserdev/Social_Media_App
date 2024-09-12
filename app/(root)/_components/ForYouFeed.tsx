@@ -21,7 +21,7 @@ const ForYouFeed = () => {
     queryKey: ["post-feed", "for-you"],
     queryFn: ({ pageParam }) =>
       ky
-    .get("/api/posts/for-you", pageParam ? { searchParams: pageParam } : {})
+    .get("/api/posts/for-you", pageParam ? { searchParams: { cursor: pageParam } } : {},)
         .json<PostPage>(),
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -67,3 +67,4 @@ const ForYouFeed = () => {
 };
 
 export default ForYouFeed;
+

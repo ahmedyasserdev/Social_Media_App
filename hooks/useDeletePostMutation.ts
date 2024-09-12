@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import { deletePost } from "@/lib/actions/post.actions";
-import { PostData, PostPage } from "@/lib/types";
+import {  PostPage } from "@/lib/types";
 import { InfiniteData, QueryFilters, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -13,7 +13,7 @@ export const useDeletePostMutation = () => {
     const mutation = useMutation({
         mutationFn: deletePost,
         onSuccess: async (deletedPost) => {
-            const queryFilter: QueryFilters = { queryKey: ["post-feed"] };
+            const queryFilter: QueryFilters = { queryKey: ["post-feed" , ] };
 
             await queryClient.cancelQueries(queryFilter);
 

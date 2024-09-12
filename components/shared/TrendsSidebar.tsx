@@ -12,7 +12,7 @@ import FollowButton from "./FollowButton";
 
 const TrendsSidebar = () => {
   return (
-    <div className="sticky top-[5.25rem] hidden h-fit w-72 flex-none space-y-5 md:block lg:w-80">
+    <div className="sticky top-[5.25rem] hidden h-fit w-72 flex-none space-y-5 lg:block lg:w-80">
       <Suspense fallback = {<Loader2 className = "animate-spin mx-auto" />} > 
 
       <WhoToFollow />
@@ -57,7 +57,7 @@ async function WhoToFollow() {
             </Link>
             <FollowButton userId = {user.id} initialState = {{
               followers : user._count.followers, 
-              isFollowedByUser :  user.followers.some(({followerId}) => followerId === user.id)
+              isFollowedByUser :  !!user.followers.length
             }}  />
           </div>
         ))
