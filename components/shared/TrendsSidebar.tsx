@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import { unstable_cache } from "next/cache";
 import { formatNumber } from "@/lib/utils";
 import FollowButton from "./FollowButton";
+import UserTooltip from "./UserTooltip";
 
 const TrendsSidebar = () => {
   return (
@@ -47,7 +48,8 @@ async function WhoToFollow() {
 
       {
         usersToFollow?.map((user) => ( 
-          <div key = {user.id} className = "flex-between gap-5"  >
+        <UserTooltip key = {user.id} user  = {user}  >
+            <div className = "flex-between gap-5"  >
             <Link className="flex items-center gap-3" href = {`/users/${user.username}`}>
               <UserAvatar avatarUrl={user.avatarUrl}  className="flex-none" />
               <div>
@@ -60,6 +62,7 @@ async function WhoToFollow() {
               isFollowedByUser :  !!user.followers.length
             }}  />
           </div>
+        </UserTooltip>
         ))
       }
 

@@ -1,5 +1,6 @@
 import FollowButton from "@/components/shared/FollowButton";
 import FollowersCount from "@/components/shared/FollowersCount";
+import Linkify from "@/components/shared/Linkify";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { FollowerInfo, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
@@ -46,10 +47,10 @@ const UserProfile = ({ user, loggedInUserId }: UserProfileProps) => {
 
             {
                 user.bio && (
-                    <>
+                    <Linkify>
                     <hr />
                     <p className ="overflow-hidden break-word whitespace-pre-line" >{user.bio}</p> 
-                    </>
+                    </Linkify>
                 )
             }
         </div>

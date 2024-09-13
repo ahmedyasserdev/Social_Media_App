@@ -9,6 +9,8 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import gsap from "gsap";
+import Linkify from "@/components/shared/Linkify";
+import UserTooltip from "@/components/shared/UserTooltip";
 
 type PostProps = {
   post: PostData;
@@ -46,16 +48,20 @@ const Post = ({ post }: PostProps) => {
     >
       <div className="flex-between">
         <div className="flex flex-wrap gap-3">
-          <Link href={`/users/${post?.user?.username}`}>
+        <UserTooltip user={post?.user}>
+        <Link href={`/users/${post?.user?.username}`}>
             <UserAvatar avatarUrl={post?.user?.avatarUrl} />
           </Link>
+        </UserTooltip>
           <div className="space-y-3">
-            <Link
+          <UserTooltip user={post?.user}>
+          <Link
               href={`/users/${post?.user?.username}`}
               className="block font-medium hover:underline"
             >
               {post?.user?.displayName}
             </Link>
+          </UserTooltip>
             <Link
               href={`/posts/${post?.id}`}
               className="text-sm text-muted-foreground hover:underline"
@@ -68,9 +74,11 @@ const Post = ({ post }: PostProps) => {
         {post?.user?.id === user?.id && <PostMoreButton post={post} />}
       </div>
 
-      <div className="whitespace-pre-line break-words">
+     <Linkify>
+     <div className="whitespace-pre-line break-words">
         {post?.content}
       </div>
+      </Linkify>
     </article>
   );
 };
