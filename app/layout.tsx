@@ -1,12 +1,15 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Spotlight } from '@/components/ui/spotlight'
-import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import {NextSSRPlugin} from "@uploadthing/react/next-ssr-plugin"
+import { extractRouterConfig } from "uploadthing/server";
+import { fileRouter } from "./api/uploadthing/core";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -34,6 +37,8 @@ export default async function RootLayout({
     <SessionProvider session={session} >
         <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <NextSSRPlugin  routerConfig={extractRouterConfig(fileRouter)} />
+
         <ReactQueryProvider>
       <ThemeProvider
             attribute="class"
@@ -51,6 +56,7 @@ export default async function RootLayout({
     </ThemeProvider>
     <Toaster/>
         </ReactQueryProvider>
+        
       </body>
     </html>
 

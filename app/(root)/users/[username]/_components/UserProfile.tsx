@@ -5,6 +5,7 @@ import UserAvatar from "@/components/shared/UserAvatar";
 import { FollowerInfo, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import { formatDate } from "date-fns";
+import EditProfileButton from "./EditProfileButton";
 
 
 type UserProfileProps = {
@@ -39,7 +40,7 @@ const UserProfile = ({ user, loggedInUserId }: UserProfileProps) => {
                     </div>
                 </div>
                 {user.id === loggedInUserId ? (
-                    <div>Edit Profile</div>
+                    <EditProfileButton  user = {user} />
                 ) : (
                     <FollowButton userId={user.id} initialState={followerInfo} />
                 )}

@@ -1,14 +1,17 @@
+"use server";
 import prisma from "../prisma";
+import { getUserDataSelect } from "../types";
+import { updateUserProfileSchema, UpdateUserProfileValues } from "../validation";
 
 
 export const getUserByEmail = async (email: string) => {
     try {
         const user = await prisma.user.findFirst({
             where: {
-                email : {
-                    equals : email,
-                    mode : 'insensitive'
-                } ,
+                email: {
+                    equals: email,
+                    mode: 'insensitive'
+                },
             }
         });
 
@@ -35,9 +38,9 @@ export const getUserByUsername = async (username: string) => {
     try {
         const user = await prisma.user.findFirst({
             where: {
-                username : {
-                    equals : username ,
-                    mode : 'insensitive'
+                username: {
+                    equals: username,
+                    mode: 'insensitive'
                 }
             }
         });
@@ -45,5 +48,27 @@ export const getUserByUsername = async (username: string) => {
         return user
     } catch {
         return null
+    }
+}
+
+export const updateUser = async ({values , userId} : {values : UpdateUserProfileValues , userId : string}) => {
+    try {
+        const validatedFields = updateUserProfileSchema.safeParse(values);
+        if (!validatedFields.success) return { error: validatedFields.error };
+
+       
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                ...validatedFields.data
+            },
+            select : getUserDataSelect(userId as string)
+        });
+        return updatedUser
+
+    } catch (error) {
+        console.log( "[UPDATE_USER_ACTION]", error);
     }
 }
