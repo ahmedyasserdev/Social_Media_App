@@ -7,17 +7,17 @@ import { Suspense } from "react";
 import UserAvatar from "./UserAvatar";
 import { Button } from "../ui/button";
 import { unstable_cache } from "next/cache";
-import { formatNumber } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import FollowButton from "./FollowButton";
 import UserTooltip from "./UserTooltip";
 
 const TrendsSidebar = () => {
   return (
     <div className="sticky top-[5.25rem] hidden h-fit w-72 flex-none space-y-5 lg:block lg:w-80">
-      <Suspense fallback = {<Loader2 className = "animate-spin mx-auto" />} > 
+      <Suspense fallback={<Loader2 className="animate-spin mx-auto" />} >
 
-      <WhoToFollow />
-      <TrendingTopics />
+        <WhoToFollow />
+        <TrendingTopics />
       </Suspense>
     </div>
   );
@@ -33,46 +33,55 @@ async function WhoToFollow() {
   if (!user) return null
   const usersToFollow = await prisma.user.findMany({
     where: {
-      NOT : {
-        id : user.id,
+      NOT: {
+        id: user.id,
       },
-    
+
+      followers: {
+        none: {
+          followerId: user.id
+
+        }
+      }
+
     },
     select: getUserDataSelect(user.id as string),
-    take : 5,
+    take: 5,
   });
 
 
-  return <div className = "bg-card rounded-2xl space-y-5 p-5 shadow-sm " >
-     <h3 className = "p-bold-24"  >Who to follow</h3>
+  return (
+    <div className={cn("bg-card rounded-2xl space-y-5 p-5 shadow-sm ", !usersToFollow.length && "hidden")} >
+      <h3 className="p-bold-24"  >Who to follow</h3>
 
       {
-        usersToFollow?.map((user) => ( 
-        <UserTooltip key = {user.id} user  = {user}  >
-            <div className = "flex-between gap-5"  >
-            <Link className="flex items-center gap-3" href = {`/users/${user.username}`}>
-              <UserAvatar avatarUrl={user.avatarUrl}  className="flex-none" />
-              <div>
-                <p className = "line-clamp-1 break-all font-semibold hover:underline" >{user.displayName}</p>
-                <p className = "line-clamp-1 break-all text-muted-foreground" >@ {user.displayName}</p>
-              </div>
-            </Link>
-            <FollowButton userId = {user.id} initialState = {{
-              followers : user._count.followers, 
-              isFollowedByUser :  !!user.followers.length
-            }}  />
-          </div>
-        </UserTooltip>
+        usersToFollow?.map((user) => (
+          <UserTooltip key={user.id} user={user}  >
+            <div className="flex-between gap-5"  >
+              <Link className="flex items-center gap-3" href={`/users/${user.username}`}>
+                <UserAvatar avatarUrl={user.avatarUrl} className="flex-none" />
+                <div>
+                  <p className="line-clamp-1 break-all font-semibold hover:underline" >{user.displayName}</p>
+                  <p className="line-clamp-1 break-all text-muted-foreground" >@ {user.displayName}</p>
+                </div>
+              </Link>
+              <FollowButton userId={user.id} initialState={{
+                followers: user._count.followers,
+                isFollowedByUser: !!user.followers.length
+              }} />
+            </div>
+          </UserTooltip>
         ))
       }
 
-  </div>
+    </div>
+  )
 }
 
 
 
 const getTrendingTopics = unstable_cache(
-  async () : Promise<{hashtag : string , count : number}[]|null> => {
+  async (): Promise<{ hashtag: string, count: number }[] | null> => {
     const result = await prisma.post.findMany({
       where: {
         content: {
@@ -80,12 +89,12 @@ const getTrendingTopics = unstable_cache(
         },
       },
     });
-  
+
     // Extract hashtags and count their occurrences
     const hashtagCounts = result.reduce((acc, post) => {
       // Find all hashtags in the content
       const hashtags = post.content.match(/#[\w_]+/g);
-      
+
       if (hashtags) {
         hashtags.forEach((hashtag) => {
           const normalizedHashtag = hashtag.toLowerCase();
@@ -96,10 +105,10 @@ const getTrendingTopics = unstable_cache(
           }
         });
       }
-  
+
       return acc;
     }, {} as Record<string, number>);
-  
+
     // Convert the counts object to an array and sort by count
     const sortedHashtags = Object.entries(hashtagCounts)
       .sort(([, countA], [, countB]) => countB - countA)
@@ -108,12 +117,12 @@ const getTrendingTopics = unstable_cache(
         hashtag,
         count,
       }));
-  
+
     return sortedHashtags;
   },
   ['trending_topics'],
   {
-    revalidate : 3 * 60 * 60 
+    revalidate: 3 * 60 * 60
   }
 )
 
@@ -124,15 +133,15 @@ async function TrendingTopics() {
   if (!trendingTopics) return null
   return (
 
-    <div className = "space-y-5 rounded-2xl bg-card shadow-sm  p-5" >
+    <div className="space-y-5 rounded-2xl bg-card shadow-sm  p-5" >
       <h5 className="p-bold-24">Trending topics</h5>
       {
-        trendingTopics.map(({hashtag , count} ) =>{
-          const title = hashtag.split("#").join("") ;
+        trendingTopics.map(({ hashtag, count }) => {
+          const title = hashtag.split("#").join("");
           return (
-            <Link href = {`/hashtag/${title}`} key = {title} className="block" >
-              <p title = {hashtag} className="line-clamp-1 break-all hover:underline font-semibold ">{hashtag}</p>
-              <p className="text-sm text-muted-foreground">{formatNumber(count)} {count === 1 ? "Post" : "Posts" } </p>
+            <Link href={`/hashtag/${title}`} key={title} className="block" >
+              <p title={hashtag} className="line-clamp-1 break-all hover:underline font-semibold ">{hashtag}</p>
+              <p className="text-sm text-muted-foreground">{formatNumber(count)} {count === 1 ? "Post" : "Posts"} </p>
             </Link>
           )
         })

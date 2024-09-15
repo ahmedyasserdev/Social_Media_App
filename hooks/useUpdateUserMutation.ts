@@ -14,17 +14,26 @@ export const useUpdateUserMutation = () => {
     const queryClient = useQueryClient();
     const { startUpload: startAvatarUpload } = useUploadThing("avatar")
     const mutation = useMutation({
-        mutationFn: ({ values, avatar }: { values: UpdateUserProfileValues; avatar: File }) => {
+
+        mutationFn: ({
+            values,
+            avatar,
+        }: {
+            values: UpdateUserProfileValues;
+            avatar?: File;
+        }) => {
             return Promise.all([
                 updateUser({ values, userId: user?.id as string }),
-                avatar && startAvatarUpload([avatar])
+                console.log(avatar),
+                avatar ? startAvatarUpload([avatar]) : null,
+                console.log( "After upload", avatar),
             ]);
         },
 
         onSuccess: async ([updatedUser, uploadResult]) => {
-            const newAvatarUrl = uploadResult?.[0].serverData?.avatarUrl;
+            //@ts-ignore
+            const newAvatarUrl = uploadResult?.[0].serverData.avatarUrl;
             const queryFilter: QueryFilters = { queryKey: ["post-feed"] };
-
             await queryClient.cancelQueries(queryFilter);
             queryClient.setQueriesData<InfiniteData<PostPage, string | null>>(
                 queryFilter,
@@ -56,15 +65,15 @@ export const useUpdateUserMutation = () => {
 
             router.refresh();
             toast({
-                description : "Profile updated successfully.",
+                description: "Profile updated successfully.",
             })
         },
 
         onError(error) {
-            console.log( "[UPDATE_USER_MUTATION]",	 error)
+            console.log("[UPDATE_USER_MUTATION]", error)
             toast({
-                variant :  "destructive",
-                description : "Something went wrong , please try again.",
+                variant: "destructive",
+                description: "Something went wrong , please try again.",
             })
         },
 
