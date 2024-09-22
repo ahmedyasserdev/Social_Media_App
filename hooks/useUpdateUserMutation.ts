@@ -24,9 +24,7 @@ export const useUpdateUserMutation = () => {
         }) => {
             return Promise.all([
                 updateUser({ values, userId: user?.id as string }),
-                console.log(avatar),
                 avatar ? startAvatarUpload([avatar]) : null,
-                console.log( "After upload", avatar),
             ]);
         },
 

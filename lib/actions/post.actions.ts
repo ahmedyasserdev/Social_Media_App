@@ -7,16 +7,21 @@ import { currentUser } from "./session.actions"
 import { getPostDataInclude } from "../types"
 
 
-export const createPost = async (content: string) => {
+export const createPost = async (content : {content : string  ; mediaIds : string[]}) => {
     const user = await currentUser()
 
     if (!user) throw new Error("Unauthorized")
 
-    if (!content) return { error: "Your post is Empty" }
+     const validatedFields = createPostSchema.safeParse(content);
 
+     if (!validatedFields.success) throw new Error("Missing required Fields")
+        const {content : text , mediaIds} = validatedFields.data
     const newPost = await prisma.post.create({
         data: {
-            content,
+            content : text,
+                attachments  : {
+                    connect : mediaIds.map((id) => ({id}))
+                },
             userId: user.id ?? ""
         },
         include: getPostDataInclude(user.id as string)

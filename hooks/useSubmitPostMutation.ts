@@ -57,6 +57,8 @@ export const useSubmitPostMutation = () => {
         description: "Failed to create post please try again.",
         variant: "destructive",
       });
+
+      
     },
   });
 

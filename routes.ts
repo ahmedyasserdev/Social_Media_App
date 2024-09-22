@@ -4,7 +4,8 @@
  * @type {string[]}
  */
 export const publicRoutes = [
-    "/new-verification"
+    "/new-verification",
+
 ]
 
 /**
@@ -25,7 +26,7 @@ export const authRoutes = [
  * Routes that start with prefix are used for API authentication purposes
  * @type {string}
  */
-export const apiAuthPrefix = "/api/path:*";
+export const apiPrefix = "/api/path:*";
 
 
 

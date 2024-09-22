@@ -31,7 +31,7 @@ import Image, { StaticImageData } from "next/image";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Resizer from "react-image-file-resizer";
-import {  useUpdateUserMutation } from "@/hooks/useUpdateUserMutation";
+import { useUpdateUserMutation } from "@/hooks/useUpdateUserMutation";
 import { redirect } from "next/navigation";
 
 interface EditProfileDialogProps {
@@ -59,18 +59,11 @@ export default function EditProfileDialog({
 
   async function onSubmit(values: UpdateUserProfileValues) {
     let newAvatarFile;
-  
+
     if (croppedAvatar) {
-      // Explicit conversion from Blob to File
-      const buffer = await croppedAvatar.arrayBuffer();
-      const blobFile = new Blob([buffer], { type: "image/webp" });
-      newAvatarFile = new File([blobFile], `avatar_${new Date()}.webp`, {
-        type: "image/webp",
-      });
+      newAvatarFile = new File([croppedAvatar], `Avatar_${user.id}.webp` );
     }
-  
-    console.log("New Avatar File:", newAvatarFile);
-  
+
     mutation.mutate(
       {
         values,
@@ -84,8 +77,9 @@ export default function EditProfileDialog({
       }
     );
   }
-  
-  
+
+
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>

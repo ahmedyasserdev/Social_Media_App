@@ -53,7 +53,7 @@ model Post {
   content   String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @db.ObjectId
-  media     Media[]
+  attachments     Media[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
