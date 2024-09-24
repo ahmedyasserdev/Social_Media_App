@@ -1,7 +1,7 @@
 import { currentUser } from "@/lib/actions/session.actions";
 import prisma from "@/lib/prisma";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError, UTApi } from "uploadthing/server";
+import { UTApi } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -25,7 +25,7 @@ export const fileRouter = {
         .onUploadComplete(async ({ metadata, file }) => {
             const oldAvatarUrl = metadata.user.avatarUrl;
             if (oldAvatarUrl) {
-                await new UTApi().deleteFiles([`Avatar_${metadata.user.id}.webp`]);
+                await new UTApi().deleteFiles(oldAvatarUrl.split("/f/")[1]);
             }
 
 

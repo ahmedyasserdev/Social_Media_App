@@ -1,8 +1,9 @@
 "use server";
+import { notFound } from "next/navigation";
 import prisma from "../prisma";
 import { getUserDataSelect } from "../types";
 import { updateUserProfileSchema, UpdateUserProfileValues } from "../validation";
-
+import { cache } from 'react'
 
 export const getUserByEmail = async (email: string) => {
     try {
@@ -72,3 +73,20 @@ export const updateUser = async ({values , userId} : {values : UpdateUserProfile
         console.log( "[UPDATE_USER_ACTION]", error);
     }
 }
+
+export const getUser = cache(async (username: string, loggedInUserId: string) => {
+    const user = await prisma.user.findFirst({
+      where: {
+        username: {
+          equals: username,
+          mode: 'insensitive'
+        },
+      },
+      select: getUserDataSelect(loggedInUserId)
+    });
+  
+    if (!user) notFound();
+  
+    return user
+  });
+  

@@ -28,7 +28,7 @@ const UserTooltip = ({user , children} : UserTooltipProps) => {
       <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent>
         <div className="flex max-w-80 flex-col gap-3 break-words px-1 py-2.5 md:min-w-52">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex-between gap-2">
             <Link href={`/users/${user.username}`}>
               <UserAvatar size={70} avatarUrl={user.avatarUrl} />
             </Link>
@@ -38,10 +38,10 @@ const UserTooltip = ({user , children} : UserTooltipProps) => {
           </div>
           <div>
             <Link href={`/users/${user.username}`}>
-              <div className="text-lg font-semibold hover:underline">
+              <h5 className="p-semibold-18 hover:underline">
                 {user.displayName}
-              </div>
-              <div className="text-muted-foreground">@{user.username}</div>
+              </h5>
+              <p className="text-muted-foreground">@{user.username}</p>
             </Link>
           </div>
           {user.bio && (

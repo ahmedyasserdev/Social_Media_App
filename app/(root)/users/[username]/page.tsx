@@ -1,29 +1,13 @@
 import TrendsSidebar from '@/components/shared/TrendsSidebar';
 import { currentUser } from '@/lib/actions/session.actions';
-import prisma from '@/lib/prisma'
-import { getUserDataSelect } from '@/lib/types';
+
 import { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
-import React, { cache } from 'react'
+import { redirect } from 'next/navigation';
 import UserProfile from './_components/UserProfile';
 import UserPosts from './_components/UserPosts';
+import { getUser } from '@/lib/actions/user.actions';
 
 
-const getUser = cache(async (username: string, loggedInUserId: string) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      username: {
-        equals: username,
-        mode: 'insensitive'
-      },
-    },
-    select: getUserDataSelect(loggedInUserId)
-  });
-
-  if (!user) notFound();
-
-  return user
-});
 
 
 export async function generateMetadata({ params: { username } }: { params: { username: string } }): Promise<Metadata> {
@@ -32,7 +16,7 @@ export async function generateMetadata({ params: { username } }: { params: { use
   const user = await getUser(username, loggedInUser.id as string);
 
   return {
-    title: `${user.displayName} (@${user.username})`,
+    title: `${user?.displayName} (@${user?.username})`,
   };
 
 }

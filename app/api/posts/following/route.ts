@@ -39,7 +39,7 @@ export async function GET(req : NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.log(error);
+    console.log("[GET_FOLLOWING]", error);
     return Response.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

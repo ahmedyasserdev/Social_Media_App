@@ -30,7 +30,7 @@ export async function GET(req : NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.log(error);
+    console.log( "[GET_FOR_YOU]" , error);
     return Response.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

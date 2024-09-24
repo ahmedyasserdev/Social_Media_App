@@ -2,7 +2,7 @@
 
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import UserAvatar from "./UserAvatar"
-import { useRef, useState } from "react"
+import { ClipboardEvent, useRef, useState } from "react"
 import { Textarea } from "../ui/textarea"
 import { Button } from "../ui/button"
 import { useSubmitPostMutation } from "@/hooks/useSubmitPostMutation"
@@ -11,11 +11,16 @@ import useMediaUpload, { Attachment } from "@/hooks/useMediaUpload"
 import { ImageIcon, Loader2, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import { useDropzone } from "@uploadthing/react"
 const PostEditor = () => {
   const user = useCurrentUser()
   const [text, setText] = useState("")
   const { mutate, isPending } = useSubmitPostMutation()
   const { attachments, isUploading, startUpload, removeAttachment, reset: resetMediaUpload, uploadProgress } = useMediaUpload()
+  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
+    onDrop: startUpload
+  })
+  const { onClick, ...rootProps } = getRootProps()
   const onSubmit = () => {
     if (!text) return
     mutate({ content: text, mediaIds: attachments.map((a) => a.mediaId).filter(Boolean) as string[] }, {
@@ -28,6 +33,13 @@ const PostEditor = () => {
   }
 
 
+  function onPaste(e: ClipboardEvent<HTMLInputElement>) {
+    const files = Array.from(e.clipboardData.items)
+    .filter(item => item.kind === "file")
+    .map((item) => item.getAsFile()) as File[] ;
+    startUpload(files)
+  }
+
 
   return (
     <>
@@ -35,8 +47,18 @@ const PostEditor = () => {
       <div className="flex flex-col bg-card gap-5 p-5 rounded-2xl shadow-sm w-full" >
         <div className="flex gap-5">
           <UserAvatar avatarUrl={user?.avatarUrl} className="hidden sm:inline" />
-          <Textarea disabled={isPending} placeholder="Write a post" value={text} onChange={(e) => setText(e.target.value)}
-            className="w-full max-h-[20rem] overflow-y-auto rounded-2xl bg-background px-5 py-3 " />
+          <div {...rootProps} className="w-full">
+
+            <Textarea
+            //@ts-ignore
+              onPaste={onPaste}
+              disabled={isPending} placeholder="Write a post" value={text} onChange={(e) => setText(e.target.value)}
+              className={cn("w-full max-h-[20rem] overflow-y-auto rounded-2xl bg-background px-5 py-3", isDragActive && "outline-dashed")} />
+
+            <input  {...getInputProps()} onPaste={onPaste} />
+
+          </div>
+
         </div>
 
         {
@@ -53,7 +75,7 @@ const PostEditor = () => {
             </>
           )}
           <AddAttachmentButton onFilesSelected={startUpload} disabled={isUploading || isPending || attachments.length > 5} />
-          <LoadingButton onClick={onSubmit} loading={isPending} className="min-w-20" disabled={!text.trim()} >Post</LoadingButton>
+          <LoadingButton onClick={onSubmit} loading={isPending} className="min-w-20" disabled={isUploading || !text.trim()} >Post</LoadingButton>
         </div>
 
       </div>
