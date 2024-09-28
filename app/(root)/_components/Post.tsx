@@ -13,6 +13,7 @@ import Linkify from "@/components/shared/Linkify";
 import UserTooltip from "@/components/shared/UserTooltip";
 import Image from "next/image";
 import { Media } from "@prisma/client";
+import LikeButton from "./LikeButton";
 
 type PostProps = {
   post: PostData;
@@ -67,6 +68,7 @@ const Post = ({ post }: PostProps) => {
             <Link
               href={`/posts/${post?.id}`}
               className="text-sm text-muted-foreground hover:underline"
+              suppressHydrationWarning
             >
               {!!post?.createdAt && formatRelativeDate(post?.createdAt)}
             </Link>
@@ -87,6 +89,17 @@ const Post = ({ post }: PostProps) => {
       )
     }
 
+    <hr className="text-muted-foreground"/>
+
+    <LikeButton  
+      postId= {post?.id}
+      initialState = {{
+        isLikedByUser : post.likes.some((like) => like.userId === user?.id), 
+        likes : post?._count.likes,
+
+      }}
+    />
+
     </article>
   );
 };
@@ -97,6 +110,7 @@ export default Post;
 interface MediaPreviewsProps {
   attachments: Media[];
 }
+
 
 function MediaPreviews({ attachments }: MediaPreviewsProps) {
   return (

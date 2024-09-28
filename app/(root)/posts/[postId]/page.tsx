@@ -10,6 +10,7 @@ import Link from 'next/link';
 import UserAvatar from '@/components/shared/UserAvatar';
 import { Loader2 } from 'lucide-react';
 import Linkify from '@/components/shared/Linkify';
+import FollowButton from '@/components/shared/FollowButton';
 
 type PostIdPageProps = {
   params: {
@@ -75,8 +76,8 @@ type UserInfoSidebarProps = {
 
 
 async function UserInfoSidebar({ user }: UserInfoSidebarProps) {
-  const loggedInUserId = await currentUser();
-  if (!loggedInUserId) return null;
+  const loggedInUser = await currentUser();
+  if (!loggedInUser) return null;
 
   return (
     <div className="rounded-2xl space-y-5 bg-card p-5 shadow-sm">
@@ -93,6 +94,18 @@ async function UserInfoSidebar({ user }: UserInfoSidebarProps) {
       <Linkify>
         <p className="text-muted-foreground line-clamp-6  whitespace-pre-line">{user.bio}</p>
       </Linkify>
+
+
+
+        {
+          user.id !== loggedInUser.id && (
+            <FollowButton initialState={{
+              followers : user?._count?.followers,
+              isFollowedByUser : !!user?.followers.some((follower) => follower.followerId === loggedInUser.id)
+            }} userId= {user.id}  />
+          )
+        }
+
     </div>
   )
 
