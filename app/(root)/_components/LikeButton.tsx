@@ -24,33 +24,33 @@ const LikeButton = ({ initialState, postId }: LikeButtonProps) => {
 
     });
 
-    const {mutate} = useMutation({
-        mutationFn : () => data.isLikedByUser ? ky.delete(`/api/posts/${postId}/likes`) : ky.post(`/api/posts/${postId}/likes`),
-
-            onMutate : async  () => {
-                    await queryClient.cancelQueries({queryKey})
-
-                    const previousState = queryClient.getQueryData<LikeInfo>(queryKey);
-                    //@ts-ignore
-                    queryClient.getQueryData<LikeInfo>(queryKey , () => ({
-                        isLikedByUser : !previousState?.isLikedByUser,
-                        likes : (previousState?.likes || 0) + (previousState?.isLikedByUser ? -1 : 1)
-                    }) )
-
-                return {previousState}
-            },
-            onError(error, variables, context) {
-                queryClient.setQueryData(queryKey, context?.previousState);
-                console.error(error);
-                toast({
-                  variant: "destructive",
-                  description: "Something went wrong. Please try again.",
-                });
-              },
-
-
-    })
-
+    const { mutate } = useMutation({
+        mutationFn: () =>
+          data.isLikedByUser
+            ? ky.delete(`/api/posts/${postId}/likes`)
+            : ky.post(`/api/posts/${postId}/likes`),
+        onMutate: async () => {
+          await queryClient.cancelQueries({ queryKey });
+    
+          const previousState = queryClient.getQueryData<LikeInfo>(queryKey);
+    
+          queryClient.setQueryData<LikeInfo>(queryKey, () => ({
+            likes:
+              (previousState?.likes || 0) + (previousState?.isLikedByUser ? -1 : 1),
+            isLikedByUser: !previousState?.isLikedByUser,
+          }));
+    
+          return { previousState };
+        },
+        onError(error, variables, context) {
+          queryClient.setQueryData(queryKey, context?.previousState);
+          console.error(error);
+          toast({
+            variant: "destructive",
+            description: "Something went wrong. Please try again.",
+          });
+        },
+      });
 
 
     return (
