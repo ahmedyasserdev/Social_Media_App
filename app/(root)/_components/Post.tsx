@@ -14,6 +14,7 @@ import UserTooltip from "@/components/shared/UserTooltip";
 import Image from "next/image";
 import { Media } from "@prisma/client";
 import LikeButton from "./LikeButton";
+import BookmarkButton from "./BookmarkButton";
 
 type PostProps = {
   post: PostData;
@@ -91,14 +92,23 @@ const Post = ({ post }: PostProps) => {
 
     <hr className="text-muted-foreground"/>
 
+    <div className="flex-between gap-5">
     <LikeButton  
       postId= {post?.id}
       initialState = {{
-        isLikedByUser : post.likes.some((like) => like.userId === user?.id), 
+        isLikedByUser : post?.likes.some((like) => like?.userId === user?.id), 
         likes : post?._count.likes,
 
       }}
     />
+
+
+
+      <BookmarkButton postId={post?.id} initialState={{
+        isBookmarkedByUser : post?.bookmarks.some((bookmark) => bookmark?.userId === user?.id )
+      }}  />
+
+    </div>
 
     </article>
   );
