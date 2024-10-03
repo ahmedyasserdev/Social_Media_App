@@ -1,10 +1,10 @@
-import React from 'react'
+
 import Bookmarks from './_components/Bookmarks'
 import { Metadata } from 'next'
 import TrendsSidebar from '@/components/shared/TrendsSidebar'
 
 export const metadata : Metadata = {
-  title : "Bookmar"
+  title : "Bookmark"
 }
 const BookmarksPage = () => {
   return (

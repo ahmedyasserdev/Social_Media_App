@@ -6,7 +6,7 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import PostMoreButton from "./PostMoreButton";
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import gsap from "gsap";
 import Linkify from "@/components/shared/Linkify";
@@ -15,6 +15,8 @@ import Image from "next/image";
 import { Media } from "@prisma/client";
 import LikeButton from "./LikeButton";
 import BookmarkButton from "./BookmarkButton";
+import {  MessageSquare } from "lucide-react";
+import Comments from "@/components/comments/Comments";
 
 type PostProps = {
   post: PostData;
@@ -23,7 +25,7 @@ type PostProps = {
 const Post = ({ post }: PostProps) => {
   const user = useCurrentUser();
   const elementRef = useRef<HTMLDivElement | null>(null);
-
+    const [showComments, setShowComments] = useState(false)
   const { ref: inViewRef, inView } = useInView({
     triggerOnce: true, // Animate only once
     threshold: 0.1,    // Trigger when 10% of the element is visible
@@ -93,7 +95,8 @@ const Post = ({ post }: PostProps) => {
     <hr className="text-muted-foreground"/>
 
     <div className="flex-between gap-5">
-    <LikeButton  
+        <div className="flex items-center gap-5">
+        <LikeButton  
       postId= {post?.id}
       initialState = {{
         isLikedByUser : post?.likes.some((like) => like?.userId === user?.id), 
@@ -102,6 +105,8 @@ const Post = ({ post }: PostProps) => {
       }}
     />
 
+        <CommentButton post={post}  onClick = {() => setShowComments((prev) => !prev)} />
+        </div>
 
 
       <BookmarkButton postId={post?.id} initialState={{
@@ -110,6 +115,11 @@ const Post = ({ post }: PostProps) => {
 
     </div>
 
+
+
+        {
+          showComments && <Comments post = {post} />
+        }
     </article>
   );
 };
@@ -168,3 +178,25 @@ function MediaPreview({ media }: MediaPreviewProps) {
 
   return <p className="text-destructive">Unsupported media type</p>;
 }
+
+
+
+type CommentButtonProps = {
+  post : PostData;
+  onClick : () => void
+}
+function CommentButton ( {onClick , post} : CommentButtonProps) {
+  return (
+    <button onClick={onClick} className="flex items-center gap-2">
+      <MessageSquare className="size-5 "/>
+
+    <span className="p-medium-12 tabular-nums">{post?._count.comments}{" "}
+        <span className="hidden sm:inline">comments</span>
+    </span>
+    
+
+    </button>
+  )
+}
+
+
