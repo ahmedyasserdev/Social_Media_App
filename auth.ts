@@ -8,7 +8,8 @@ export const { auth, handlers, signIn, signOut  ,  } = NextAuth({
  
 
   callbacks: {
-    async session({ session, token  }) {
+    async session({ session, token ,  }) {
+      
       if (session.user && token.sub) {
         session.user = {
           ...session.user,
@@ -17,6 +18,7 @@ export const { auth, handlers, signIn, signOut  ,  } = NextAuth({
           avatarUrl : token.avatarUrl as string ,
           username: token.username as string,
           email: token.email as string,
+          displayName: token.displayName as string,
         };
       }
 

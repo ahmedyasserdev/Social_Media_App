@@ -6,9 +6,7 @@ import { cn, formatRelativeDate } from "@/lib/utils";
 import PostMoreButton from "./PostMoreButton";
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useEffect, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
-import gsap from "gsap";
+
 import Linkify from "@/components/shared/Linkify";
 import UserTooltip from "@/components/shared/UserTooltip";
 import Image from "next/image";
@@ -17,35 +15,23 @@ import LikeButton from "./LikeButton";
 import BookmarkButton from "./BookmarkButton";
 import {  MessageSquare } from "lucide-react";
 import Comments from "@/components/comments/Comments";
+import { useAnimateEntry } from "@/hooks/useAnimateEntry";
+import { useState } from "react";
 
 type PostProps = {
   post: PostData;
 };
 
+
+
 const Post = ({ post }: PostProps) => {
+  const { setRefs } = useAnimateEntry();
   const user = useCurrentUser();
-  const elementRef = useRef<HTMLDivElement | null>(null);
-    const [showComments, setShowComments] = useState(false)
-  const { ref: inViewRef, inView } = useInView({
-    triggerOnce: true, // Animate only once
-    threshold: 0.1,    // Trigger when 10% of the element is visible
-  });
+  const [showComments, setShowComments] = useState(false);
 
-  // Combine the refs from useRef and useInView
-  const setRefs = (node: HTMLDivElement) => {
-    elementRef.current = node;
-    inViewRef(node);
-  };
-
-  useEffect(() => {
-    if (inView && elementRef.current) {
-      gsap.to(elementRef.current, {
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power3.out',
-      });
-    }
-  }, [inView]);
+ 
+ 
+ 
 
   return (
     <article

@@ -14,7 +14,7 @@ type CommentProps = {
 const Comment = ({comment} : CommentProps) => {
 
     const loggedInUser  = useCurrentUser()
-    const isCreator = comment.user.id === loggedInUser?.id
+    const isCreator = comment?.user?.id === loggedInUser?.id
 
     return (
     <div className = "flex gap-3 py-3 group/comment " >

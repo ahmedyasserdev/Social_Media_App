@@ -1,5 +1,6 @@
 "use server";
 
+import { NotificationType } from "@prisma/client";
 import prisma from "../prisma";
 import { getCommentDataInclude, PostData } from "../types";
 import { createCommentSchema } from "../validation";
@@ -13,14 +14,32 @@ export const submitComment = async ({ post, content }: { post: PostData; content
             if (!content) return { error: "Missing content" }
 
 
-const newComment = await prisma.comment.create({
-        data: {
-            content,
-            postId: post.id,
-            userId: user.id as string,
-        },
-        include : getCommentDataInclude(user. id as string)
-    })
+   const [newComment] = await prisma.$transaction([
+        prisma.comment.create({
+            data: {
+                content,
+                postId: post.id,
+                userId: user.id as string,
+            },
+            include : getCommentDataInclude(user. id as string)
+        })
+,
+
+
+            ...(user.id !== post.user.id ? [
+                    prisma.notification.create({
+                        data : {
+                            issuerId : user.id as string,
+                            recipientId : post.userId as string,
+                            type : NotificationType.COMMENT,
+                            postId : post.id
+                        }
+                    })
+            ] : []
+        
+        
+        )
+    ])
 
  
     return newComment

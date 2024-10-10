@@ -1,6 +1,7 @@
 import { currentUser } from "@/lib/actions/session.actions";
 import prisma from "@/lib/prisma";
 import { FollowerInfo } from "@/lib/types";
+import { NotificationType } from "@prisma/client";
 
 export async function GET(req: Request, { params: { userId } }: { params: { userId: string } }) {
     try {
@@ -53,7 +54,8 @@ export async function POST(req: Request, { params: { userId } }: { params: { use
         const loggedInUser = await currentUser();
         if (!loggedInUser) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-        await prisma.follow.upsert({
+      await prisma.$transaction([
+        prisma.follow.upsert({
             where: {
                 followerId_followingId: {
                     followerId: loggedInUser.id as string,
@@ -64,8 +66,21 @@ export async function POST(req: Request, { params: { userId } }: { params: { use
                 followerId: loggedInUser.id as string,
                 followingId: userId
             },
-            update : {}
-        })
+            update: {}
+        }),
+
+
+
+            prisma.notification.create({
+                data : {
+                    issuerId  : loggedInUser.id  as string ,
+                    recipientId : userId ,
+                    type : NotificationType.FOLLOW,
+
+                }
+            })
+
+      ])
 
         return new Response()
 
@@ -84,15 +99,25 @@ export async function DELETE(req: Request, { params: { userId } }: { params: { u
         if (!loggedInUser) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
 
-        await prisma.follow.deleteMany({
-            where : {
-                followerId : loggedInUser.id as string,
-                followingId : userId
-            }
-        })
+        await prisma.$transaction([
+            prisma.follow.deleteMany({
+                where: {
+                    followerId: loggedInUser.id as string,
+                    followingId: userId
+                }
+            }),
+
+            prisma.notification.deleteMany({
+                where : {
+                    issuerId : loggedInUser.id as string,
+                    recipientId : userId,
+                    type  : NotificationType.FOLLOW
+                }
+            })
+        ])
         return new Response()
 
-    }catch (error) {
+    } catch (error) {
         console.log("[DELETE_FOLLOWERS_ROUTE]", error);
         return Response.json({ error: "Internal Server Error" }, { status: 500 });
     }

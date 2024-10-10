@@ -4,6 +4,7 @@ export type ExtendeUser = DefaultSession["user"] & {
     username : string ;
     bio? : string ;
     avatarUrl? : string
+    displayName : string
 }
 
 declare module "next-auth" {

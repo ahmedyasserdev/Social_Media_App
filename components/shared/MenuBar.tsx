@@ -1,9 +1,9 @@
-"use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { Bell, Bookmark, Home, Mail } from "lucide-react";
-import { useEffect } from "react";
-import gsap from "gsap";
+import {  Bookmark, Home, Mail } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { currentUser } from "@/lib/actions/session.actions";
+import NotificationsButton from "./NotificationsButton";
 
 type MenuBarProps = {
   className?: string;
@@ -11,30 +11,20 @@ type MenuBarProps = {
 
 const menuItems = [
   { href: "/", label: "Home", icon: <Home /> },
-  { href: "/notifications", label: "Notifications", icon: <Bell /> },
   { href: "/messages", label: "Messages", icon: <Mail /> },
   { href: "/bookmarks", label: "Bookmarks", icon: <Bookmark /> },
 ];
-const MenuBar = ({ className }: MenuBarProps) => {
-    useEffect(() => {
-        const menuItems = document.querySelectorAll('.menu-item');
-        
-        gsap.fromTo(
-          menuItems,
-          {
-            x: -100,
-            opacity: 0,
-          },
-          {
-            x: 0,
-            opacity: 1,
-            stagger: .1,
-            duration: 1,
-            delay  : 1.5 ,
-            ease: "circ.out",
-          }
-        );
-    }, []);
+const MenuBar = async ({ className }: MenuBarProps) => {
+  const user = await currentUser();
+    if (!user ) return null;
+
+   const unreadNotifications = await prisma.notification.count({
+    where: {
+      recipientId: user.id,
+      read: false,
+    },
+  });
+
   return (
     <div className={className }>
       {menuItems.map(({ href, label, icon }) => (
@@ -45,6 +35,7 @@ const MenuBar = ({ className }: MenuBarProps) => {
           </Link>
         </Button>
       ))}
+    <NotificationsButton initialState={{ unreadCount: unreadNotifications }} />
     </div>
   );
 };
